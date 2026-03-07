@@ -32,28 +32,36 @@
         .grid {
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
         }
+        
+        /* ดีไซน์การ์ดสินค้าแบบใหม่ แบ่งโซนชัดเจน */
         .product-card {
-            background: var(--card-bg); border-radius: 12px; padding: 15px;
+            background: var(--card-bg); border-radius: 12px;
             text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             display: flex; flex-direction: column; justify-content: space-between;
-            min-height: 100px; cursor: pointer; transition: transform 0.1s;
-            border: 1px solid #eee;
+            min-height: 110px; border: 1px solid #eee; overflow: hidden;
         }
-        .product-card:active { transform: scale(0.95); }
-        .product-name { font-size: 15px; margin-bottom: 10px; word-break: break-word; }
+        .tap-zone {
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            padding: 15px 10px; cursor: pointer; transition: background 0.1s;
+        }
+        .tap-zone:active { background: #e8f5e9; } /* กดแล้วเป็นสีเขียวอ่อน */
+        .product-name { font-size: 15px; word-break: break-word; font-weight: bold; color: #333; }
+        
         .controls {
             display: flex; align-items: center; justify-content: space-between;
-            background: #f9f9f9; border-radius: 20px; padding: 5px;
+            background: #f9f9f9; padding: 8px 12px; border-top: 1px solid #eee;
         }
-        .btn-minus {
-            background: #e0e0e0; border: none; width: 30px; height: 30px; border-radius: 50%;
-            font-size: 18px; font-weight: bold; color: #555; display: flex; align-items: center; justify-content: center;
+        .btn-minus, .btn-plus {
+            background: #e0e0e0; border: none; width: 32px; height: 32px; border-radius: 50%;
+            font-size: 18px; font-weight: bold; color: #555; display: flex; align-items: center; justify-content: center; cursor: pointer;
         }
+        .btn-plus { background: #e8f5e9; color: var(--primary); }
+        .btn-minus:active, .btn-plus:active { transform: scale(0.9); }
         
         /* สไตล์สำหรับช่องพิมพ์ตัวเลข */
         .qty-input {
             width: 45px; text-align: center; font-size: 16px; font-weight: bold;
-            color: var(--primary); border: none; background: transparent; padding: 0;
+            color: var(--primary); border: none; background: transparent; padding: 5px 0;
             -webkit-appearance: none; appearance: none; outline: none;
         }
         .qty-input:focus { border-bottom: 2px solid var(--primary); border-radius: 0; }
@@ -164,17 +172,18 @@
             items.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.onclick = () => updateQty(item, 1); 
 
                 card.innerHTML = `
-                    <div class="product-name">${item}</div>
-                    <div class="controls">
-                        <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1, event)" style="visibility: hidden;">-</button>
+                    <div class="tap-zone" onclick="updateQty('${item}', 1)">
+                        <div class="product-name">${item}</div>
+                    </div>
+                    <div class="controls" onclick="event.stopPropagation()">
+                        <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1)" style="visibility: hidden;">-</button>
                         <input type="number" inputmode="numeric" class="qty-input zero" id="qty-${item}" value="0" 
                             onclick="event.stopPropagation()" 
                             oninput="typeQty('${item}', this.value)" 
                             onblur="formatQty('${item}')">
-                        <button class="btn-minus" style="visibility: hidden;">+</button>
+                        <button class="btn-plus" onclick="updateQty('${item}', 1)">+</button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -183,8 +192,7 @@
         }
     }
 
-    function updateQty(item, change, event) {
-        if (event) event.stopPropagation(); 
+    function updateQty(item, change) {
         if (!cart[item]) cart[item] = 0;
         cart[item] += change;
         if (cart[item] < 0) cart[item] = 0;
@@ -201,7 +209,6 @@
         }
         updateTotal();
         
-        // อัปเดตการแสดงผลปุ่มลบโดยไม่รบกวนการพิมพ์
         const minusBtn = document.getElementById(`minus-${item}`);
         if(minusBtn) minusBtn.style.visibility = cart[item] > 0 ? 'visible' : 'hidden';
         
@@ -229,7 +236,6 @@
         }
         updateTotal();
         
-        // ถ้าเปิดตะกร้าอยู่ให้อัปเดตตะกร้าด้วย
         if(document.getElementById('cart-modal').style.display === 'flex') {
             renderCartItems();
         }
@@ -247,7 +253,6 @@
 
     function closeCart() {
         document.getElementById('cart-modal').style.display = 'none';
-        // อัปเดตหน้าหลักให้ตรงกับตะกร้าเผื่อมีการแก้ไขตัวเลข
         for (const item in cart) { updateUI(item); }
     }
 
@@ -270,7 +275,7 @@
                                 <input type="number" inputmode="numeric" class="qty-input" value="${cart[item]}" 
                                     oninput="typeQty('${item}', this.value)" 
                                     onblur="formatQty('${item}')">
-                                <button class="btn-minus" onclick="updateQty('${item}', 1)">+</button>
+                                <button class="btn-plus" onclick="updateQty('${item}', 1)">+</button>
                             </div>
                         </div>
                     `;
