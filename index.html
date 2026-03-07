@@ -15,7 +15,7 @@
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { 
             margin: 0; background-color: var(--bg); color: var(--text); 
-            padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* เว้นที่ให้ปุ่มตะกร้าและขอบจอ iPhone */
+            padding-bottom: calc(80px + env(safe-area-inset-bottom));
             -webkit-tap-highlight-color: transparent;
         }
         header {
@@ -49,8 +49,15 @@
             background: #e0e0e0; border: none; width: 30px; height: 30px; border-radius: 50%;
             font-size: 18px; font-weight: bold; color: #555; display: flex; align-items: center; justify-content: center;
         }
-        .qty { font-size: 16px; font-weight: bold; color: var(--primary); }
-        .qty.zero { color: #aaa; }
+        
+        /* สไตล์สำหรับช่องพิมพ์ตัวเลข */
+        .qty-input {
+            width: 45px; text-align: center; font-size: 16px; font-weight: bold;
+            color: var(--primary); border: none; background: transparent; padding: 0;
+            -webkit-appearance: none; appearance: none; outline: none;
+        }
+        .qty-input:focus { border-bottom: 2px solid var(--primary); border-radius: 0; }
+        .qty-input.zero { color: #aaa; }
         
         /* ตะกร้าสินค้า */
         .cart-bar {
@@ -88,7 +95,7 @@
             padding: 10px 0; border-bottom: 1px dashed #eee;
         }
         .cart-item-name { flex-grow: 1; font-size: 16px; }
-        .cart-item-controls { display: flex; align-items: center; gap: 15px; }
+        .cart-item-controls { display: flex; align-items: center; gap: 10px; }
         .modal-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
         .btn-clear { background: #ffebee; color: var(--danger); border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; }
         .btn-copy { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; }
@@ -98,8 +105,7 @@
 
 <header>📝 สั่งของเข้าร้าน</header>
 
-<div class="container" id="product-container">
-    </div>
+<div class="container" id="product-container"></div>
 
 <div class="cart-bar">
     <div class="cart-total">รวม: <span id="total-qty">0</span> ชิ้น</div>
@@ -112,8 +118,7 @@
             <h2>🛒 สรุปรายการสั่งของ</h2>
             <button class="close-btn" onclick="closeCart()">✖</button>
         </div>
-        <div class="cart-list" id="cart-list">
-            </div>
+        <div class="cart-list" id="cart-list"></div>
         <div class="modal-actions">
             <button class="btn-clear" onclick="clearCart()">ล้างข้อมูล</button>
             <button class="btn-copy" onclick="copyToClipboard()">📋 คัดลอกส่ง LINE</button>
@@ -126,14 +131,14 @@
         "📦 ผลไม้ (ใส่กล่อง)": [
             "ส้ม (กล่อง)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (กล่อง)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)"
         ],
-        "🍉 ผลไม้": [
+        "🍉 ผลไม้ (โชว์)": [
             "แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิ้ลเขียว", "แอปเปิ้ลแดง", "แก้วมังกร ใช้", "แก้วมังกรโชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย"
         ],
         "🥛 อื่นๆ": [
             "น้ำมะพร้าว", "มะนาว", "โยเกิร์ต", "นมข้นจืด คาร์เนชั่น", "นมข้นหวาน", "น้ำเชื่อม", "นมอัลมอนด์", "นมอัลมอนด์อโวคาโด", "นมโอ๊ต", "โค้ก", "ติ่งฟง สตรอว์เบอร์รี่", "ติ่งฟง กีวี่", "แก้วขาว", "แก้วดำ", "ฝา", "หลอดไม่ห่อฟิล์ม", "หลอดห่อฟิล์ม", "หลอดไข่มุก ห่อฟิล์ม สีดำ", "ไข่มุก", "ผลโอริโอ้บดหยาบ", "โอริโอ้", "ปีโป้"
         ],
         "🍬 ขนม": [
-            "ลูกพรุน (ฝาแดง)", "กีวี่ (ฝาแดง)", "ลูก (ฝาแดง)", "บ๊วย 5 รส (ฝาแดง)", "บ๊วยเค็ม (ฝาแดง)", "บ๊วยชิ้น (ฝาแดง)", "เชอร์รี่ (ฝาแดง)", "มะเขือเทศ (ฝาแดง)", "มะม่วงหยี", "มะขามจี๊ดจ๊าด", "สับปะรดอบ", "มะนาว อบแห้ง", "มะละกอ อบแห้ง", "ลูกพรุนหวาน (ฝาม่วง)", "ลูกไหนแช่อิ่ม (ฝาเขียว)", "ลูกพลัมอบแห้ง (ฝาเขียว)", "บ๊วยชิ้นอบแห้ง (ฝาชมพู)", "บ๊วยอบแห้งรสสตรอเบอร์รี่ (ฝาชมพู)", "บ๊วยรสน้ำผึ้ง (ฝาชมพู)", "บ๊วยเค็ม (ฝาเขียว)", "บ๊วยรสหวาน (ฝาม่วง)", "บ๊วยห้ารส (ฝาเขียว)", "มะเขือราชินีอบแห้ง (ฝาเขียว)", "มะขาม 3 รส (ฝาเขียว)", "มะขามป้อมแช่อิ่ม (ฝาเขียว)", "เชอร์รี่แช่อิ่ม (ฝาเขียว)", "เชอร์รี่อบแห้ง (ฝาม่วง)", "มันหนึบ", "วอลนัท", "แครนเบอร์รี่ชีส (10 บาท)", "ช็อคบอล", "เยลลี่ผลไม้", "บ๊วย 2 บาท", "ตุ๊บตั๊บ", "ท้อแดง 3 บาท", "ข้าวโอ๊ต", "นูกัต", "บิสกิตแบน 4 บาท", "ปีโป้กรอบ", "เยลลี่"
+            "ลูกพรุน (ฝาแดง)", "กีวี่ (ฝาแดง)", "ลูกไน๋เชื่อม (ฝาแดง)", "บ๊วย 5 รส (ฝาแดง)", "บ๊วยเค็ม (ฝาแดง)", "บ๊วยชิ้น (ฝาแดง)", "เชอร์รี่ (ฝาแดง)", "มะเขือเทศ (ฝาแดง)", "มะม่วงหยี", "มะขามจี๊ดจ๊าด", "สับปะรดอบ", "มะนาว อบแห้ง", "มะละกอ อบแห้ง", "ลูกพรุนหวาน (ฝาม่วง)", "ลูกไหนแช่อิ่ม (ฝาเขียว)", "ลูกพลัมอบแห้ง (ฝาเขียว)", "บ๊วยชิ้นอบแห้ง (ฝาชมพู)", "บ๊วยอบแห้งรสสตรอเบอร์รี่ (ฝาชมพู)", "บ๊วยรสน้ำผึ้ง (ฝาชมพู)", "บ๊วยเค็ม (ฝาเขียว)", "บ๊วยรสหวาน (ฝาม่วง)", "บ๊วยห้ารส (ฝาเขียว)", "มะเขือราชินีอบแห้ง (ฝาเขียว)", "มะขาม 3 รส (ฝาเขียว)", "มะขามป้อมแช่อิ่ม (ฝาเขียว)", "เชอร์รี่แช่อิ่ม (ฝาเขียว)", "เชอร์รี่อบแห้ง (ฝาม่วง)", "มันหนึบ", "วอลนัท", "แครนเบอร์รี่ชีส (10 บาท)", "ช็อคบอล", "เยลลี่ผลไม้", "บ๊วย 2 บาท", "ตุ๊บตั๊บ", "ท้อแดง 3 บาท", "ข้าวโอ๊ต", "นูกัต", "บิสกิตแบน 4 บาท", "ปีโป้กรอบ", "เยลลี่"
         ],
         "❄️ แช่แข็ง": [
             "มิกซ์เบอร์รี่", "สตรอว์เบอร์รี่", "บลูเบอร์รี่", "ลิ้นจี่", "ลำไย", "ราสเบอร์รี่", "แครนเบอร์รี่", "มัลเบอร์รี่"
@@ -159,14 +164,18 @@
             items.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
-                card.onclick = () => updateQty(item, 1); // กดทั้งกล่องเพื่อบวก 1
+                card.onclick = () => updateQty(item, 1); 
 
                 card.innerHTML = `
                     <div class="product-name">${item}</div>
                     <div class="controls">
-                        <button class="btn-minus" onclick="updateQty('${item}', -1, event)">-</button>
-                        <span class="qty zero" id="qty-${item}">0</span>
-                        <button class="btn-minus" style="visibility:hidden">+</button> </div>
+                        <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1, event)" style="visibility: hidden;">-</button>
+                        <input type="number" inputmode="numeric" class="qty-input zero" id="qty-${item}" value="0" 
+                            onclick="event.stopPropagation()" 
+                            oninput="typeQty('${item}', this.value)" 
+                            onblur="formatQty('${item}')">
+                        <button class="btn-minus" style="visibility: hidden;">+</button>
+                    </div>
                 `;
                 grid.appendChild(card);
             });
@@ -175,22 +184,55 @@
     }
 
     function updateQty(item, change, event) {
-        if (event) event.stopPropagation(); // ป้องกันไม่ให้กดลบแล้วกลายเป็นบวก
-        
+        if (event) event.stopPropagation(); 
         if (!cart[item]) cart[item] = 0;
         cart[item] += change;
-        
         if (cart[item] < 0) cart[item] = 0;
-        
-        // อัปเดตหน้าหลัก
-        const qtySpan = document.getElementById(`qty-${item}`);
-        if(qtySpan) {
-            qtySpan.innerText = cart[item];
-            qtySpan.className = cart[item] > 0 ? 'qty' : 'qty zero';
+        updateUI(item);
+    }
+
+    function typeQty(item, value) {
+        if (value === '') {
+            cart[item] = 0;
+        } else {
+            let val = parseInt(value);
+            if (isNaN(val) || val < 0) val = 0;
+            cart[item] = val;
         }
-        
         updateTotal();
-        renderCartItems(); // อัปเดตในหน้าต่างสรุปด้วยถ้าเปิดอยู่
+        
+        // อัปเดตการแสดงผลปุ่มลบโดยไม่รบกวนการพิมพ์
+        const minusBtn = document.getElementById(`minus-${item}`);
+        if(minusBtn) minusBtn.style.visibility = cart[item] > 0 ? 'visible' : 'hidden';
+        
+        if(document.getElementById('cart-modal').style.display === 'flex') {
+            renderCartItems();
+        }
+    }
+
+    function formatQty(item) {
+        updateUI(item);
+    }
+
+    function updateUI(item) {
+        const input = document.getElementById(`qty-${item}`);
+        const minusBtn = document.getElementById(`minus-${item}`);
+        if(input) {
+            input.value = cart[item] || 0;
+            if (cart[item] > 0) {
+                input.classList.remove('zero');
+                minusBtn.style.visibility = 'visible';
+            } else {
+                input.classList.add('zero');
+                minusBtn.style.visibility = 'hidden';
+            }
+        }
+        updateTotal();
+        
+        // ถ้าเปิดตะกร้าอยู่ให้อัปเดตตะกร้าด้วย
+        if(document.getElementById('cart-modal').style.display === 'flex') {
+            renderCartItems();
+        }
     }
 
     function updateTotal() {
@@ -205,6 +247,8 @@
 
     function closeCart() {
         document.getElementById('cart-modal').style.display = 'none';
+        // อัปเดตหน้าหลักให้ตรงกับตะกร้าเผื่อมีการแก้ไขตัวเลข
+        for (const item in cart) { updateUI(item); }
     }
 
     function renderCartItems() {
@@ -223,7 +267,9 @@
                             <div class="cart-item-name">${item}</div>
                             <div class="cart-item-controls">
                                 <button class="btn-minus" onclick="updateQty('${item}', -1)">-</button>
-                                <span class="qty">${cart[item]}</span>
+                                <input type="number" inputmode="numeric" class="qty-input" value="${cart[item]}" 
+                                    oninput="typeQty('${item}', this.value)" 
+                                    onblur="formatQty('${item}')">
                                 <button class="btn-minus" onclick="updateQty('${item}', 1)">+</button>
                             </div>
                         </div>
@@ -236,9 +282,8 @@
 
     function clearCart() {
         if(confirm("ต้องการล้างรายการทั้งหมดใช่หรือไม่?")) {
+            for (const item in cart) { cart[item] = 0; updateUI(item); }
             cart = {};
-            document.querySelectorAll('.qty').forEach(el => { el.innerText = '0'; el.className = 'qty zero'; });
-            updateTotal();
             closeCart();
         }
     }
@@ -277,7 +322,6 @@
         });
     }
 
-    // เริ่มการทำงาน
     init();
 </script>
 </body>
