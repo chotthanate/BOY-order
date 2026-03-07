@@ -301,7 +301,7 @@
         }
 
         const date = new Date().toLocaleDateString('th-TH');
-        let text = `📦 รายการสั่งของ (${date})\n\n`;
+        let text = `📦 รายการสั่งของ Big C (${date})\n\n`;
 
         for (const [catName, items] of Object.entries(categories)) {
             const catItems = items.filter(item => cart[item] > 0);
