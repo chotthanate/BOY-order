@@ -165,7 +165,15 @@
         ]
     };
 
-    let cart = {};
+    // ตั้งค่าเริ่มต้น (Default) ให้สินค้าเหล่านี้มีจำนวน 1 ตอนเปิดแอป
+    let cart = {
+        "ส้ม (โหล)": 1,
+        "สับปะรด ปั่น (กล่อง)": 1,
+        "สับปะรด สกัด (กล่อง)": 1,
+        "แตงโม (กล่อง)": 1,
+        "มะพร้าว (กล่อง)": 1,
+        "มะม่วง (กล่อง)": 1
+    };
 
     function init() {
         const container = document.getElementById('product-container');
@@ -182,13 +190,18 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
 
+                // เช็กว่ามีค่าเริ่มต้นไว้ไหม ถ้ามีให้แสดงปุ่มลบและตัวเลขเลย
+                const currentQty = cart[item] || 0;
+                const visibility = currentQty > 0 ? 'visible' : 'hidden';
+                const zeroClass = currentQty === 0 ? 'zero' : '';
+
                 card.innerHTML = `
                     <div class="tap-zone" onclick="updateQty('${item}', 1)">
                         <div class="product-name">${item}</div>
                     </div>
                     <div class="controls" onclick="event.stopPropagation()">
-                        <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1)" style="visibility: hidden;">-</button>
-                        <input type="number" inputmode="numeric" class="qty-input zero" id="qty-${item}" value="0" 
+                        <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1)" style="visibility: ${visibility};">-</button>
+                        <input type="number" inputmode="numeric" class="qty-input ${zeroClass}" id="qty-${item}" value="${currentQty}" 
                             onclick="event.stopPropagation()" 
                             oninput="typeQty('${item}', this.value)" 
                             onblur="formatQty('${item}')">
@@ -199,6 +212,7 @@
             });
             container.appendChild(grid);
         }
+        updateTotal(); // อัปเดตยอดรวมด้านล่างสุดทันทีตอนเปิดแอป
     }
 
     function updateQty(item, change) {
