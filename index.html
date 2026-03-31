@@ -26,7 +26,6 @@
             position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        /* สไตล์สำหรับเมนูแท็บ */
         .tab-menu {
             display: flex; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             position: sticky; top: calc(56px + env(safe-area-inset-top)); z-index: 9;
@@ -77,7 +76,6 @@
         .qty-input:focus { border-bottom: 2px solid var(--primary); border-radius: 0; }
         .qty-input.zero { color: #aaa; }
 
-        /* สไตล์ช่องกรอกน้ำหนัก */
         .weight-input-container {
             margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ccc;
             display: flex; align-items: center; justify-content: center; gap: 5px;
@@ -98,7 +96,6 @@
             border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
         }
 
-        /* Modal สรุปรายการ */
         .modal {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5); z-index: 30;
@@ -120,7 +117,7 @@
             padding: 10px 0; border-bottom: 1px dashed #eee;
         }
         .modal-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
-        .btn-save-cloud { background: var(--secondary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; }
+        .btn-save-cloud { background: var(--secondary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
         
         .action-btn { width: 100%; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; margin-bottom: 15px;}
         .btn-load { background: #e3f2fd; color: #1976d2; border: 1px solid #90caf9; }
@@ -165,7 +162,8 @@
         <div class="cart-list" id="cart-list"></div>
         <div class="modal-actions">
             <button class="btn-save-cloud" onclick="saveOrderToCloud()">💾 บันทึกออเดอร์ขึ้นระบบ</button>
-            <button style="background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px;" onclick="copyToClipboard()">📋 คัดลอกส่ง LINE</button>
+            <button style="background: var(--primary); color: white; border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer;" onclick="copyToClipboard()">📋 คัดลอกส่ง LINE</button>
+            <button style="background: #ffebee; color: var(--danger); border: none; padding: 15px; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer;" onclick="clearCart()">🗑️ ล้างข้อมูลตะกร้า</button>
         </div>
     </div>
 </div>
@@ -174,7 +172,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
     import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-    // กุญแจ Firebase ของคุณบอย
     const firebaseConfig = {
       apiKey: "AIzaSyAch0s5J7zaWE--YgCRjtwzH__YYKRcfvw",
       authDomain: "bibc-acc.firebaseapp.com",
@@ -188,7 +185,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ทำให้ฟังก์ชันของ Firebase เรียกใช้ใน HTML ได้
     window.db = db;
     window.setDoc = setDoc;
     window.doc = doc;
@@ -197,14 +193,36 @@
 
 <script>
     const categories = {
-        "🍉 ผลไม้ (ใส่กล่อง)": ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "เมล่อน (กล่อง)", "แคนตาลูป (กล่อง)", "มะละกอ (กล่อง)"],
-        "🍍 ผลไม้ (โชว์)": ["แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิ้ลเขียว", "แอปเปิ้ลแดง", "แก้วมังกร ใช้", "แก้วมังกรโชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย", "ฟักทอง"],
-        "📦 บรรจุภัณฑ์": ["แก้วขาว", "แก้วดำ", "ฝา", "หลอดไม่ห่อฟิล์ม", "หลอดห่อฟิล์ม", "สายเดี่ยว", "ถุง grab"]
-        // ขอตัดหมวดหมู่บางส่วนออกในโค้ดตัวอย่างนี้เพื่อความกระชับ สามารถเพิ่มคืนได้เลยครับ
+        "🍉 ผลไม้ (ใส่กล่อง)": [
+            "ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "เมล่อน (กล่อง)", "แคนตาลูป (กล่อง)", "มะละกอ (กล่อง)"
+        ],
+        "🍍 ผลไม้ (โชว์)": [
+            "แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิ้ลเขียว", "แอปเปิ้ลแดง", "แก้วมังกร ใช้", "แก้วมังกรโชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย", "ฟักทอง"
+        ],
+        "🥛 อื่นๆ": [
+            "น้ำมะพร้าว", "มะนาว", "โยเกิร์ต", "นมข้นจืด คาร์เนชั่น", "นมข้นหวาน", "น้ำเชื่อม", "นมอัลมอนด์", "นมอัลมอนด์อโวคาโด", "นมโอ๊ต", "น้ำผึ้ง (ขวด)", "น้ำผึ้งเบอร์รี่", "โค้ก", "ติ่งฟง สตรอว์เบอร์รี่", "ติ่งฟง กีวี่", "คาราเมล"
+        ],
+        "🥫 ผลไม้อบแห้งกระปุก": [
+            "ลูกพรุน (ฝาแดง)", "กีวี่ (ฝาแดง)", "ลูกไน๋เชื่อม (ฝาแดง)", "บ๊วย 5 รส (ฝาแดง)", "บ๊วยเค็ม (ฝาแดง)", "บ๊วยชิ้น (ฝาแดง)", "เชอร์รี่ (ฝาแดง)", "มะเขือเทศ (ฝาแดง)", "มะม่วงหยี", "มะขามจี๊ดจ๊าด", "สับปะรดอบ", "มะนาว อบแห้ง", "มะละกอ อบแห้ง", "ลูกพรุนหวาน (ฝาม่วง)", "ลูกไหนแช่อิ่ม (ฝาเขียว)", "ลูกพลัมอบแห้ง (ฝาเขียว)", "บ๊วยชิ้นอบแห้ง (ฝาชมพู)", "บ๊วยอบแห้งรสสตรอเบอร์รี่ (ฝาชมพู)", "บ๊วยรสน้ำผึ้ง (ฝาชมพู)", "บ๊วยเค็ม (ฝาเขียว)", "บ๊วยรสหวาน (ฝาม่วง)", "บ๊วยห้ารส (ฝาเขียว)", "มะเขือราชินีอบแห้ง (ฝาเขียว)", "มะขาม 3 รส (ฝาเขียว)", "มะขามป้อมแช่อิ่ม (ฝาเขียว)", "เชอร์รี่แช่อิ่ม (ฝาเขียว)", "เชอร์รี่อบแห้ง (ฝาม่วง)"
+        ],
+        "🍬 ขนม": [
+            "มันหนึบ", "วอลนัท", "แครนเบอร์รี่ชีส (10 บาท)", "ช็อคบอล", "เยลลี่ผลไม้", "บ๊วย 2 บาท", "ตุ๊บตั๊บ", "ท้อแดง 3 บาท", "ข้าวโอ๊ต", "นูกัต", "บิสกิตแบน 4 บาท", "ปีโป้กรอบ", "เยลลี่"
+        ],
+        "❄️ ผลไม้แช่แข็ง": [
+            "มิกซ์เบอร์รี่", "สตรอว์เบอร์รี่", "บลูเบอร์รี่", "ลิ้นจี่", "ลำไย", "ราสเบอร์รี่", "แครนเบอร์รี่", "มัลเบอร์รี่"
+        ],
+        "📦 บรรจุภัณฑ์": [
+            "แก้วขาว", "แก้วดำ", "ฝา", "หลอดไม่ห่อฟิล์ม", "หลอดห่อฟิล์ม", "หลอดไข่มุก ห่อฟิล์ม สีดำ", "สายเดี่ยว", "ถุง grab"
+        ],
+        "🍪 ท็อปปิ้ง": [
+            "ไข่มุก", "ผลโอริโอ้บดหยาบ", "โอริโอ้", "ปีโป้", "วิปครีม"
+        ],
+        "☕ ผง": [
+            "ครีมเทียม", "โกโก้", "ช็อคโกแลต", "ไมโล", "โอวัลติน", "ชาเขียว", "ชาไทย", "ชานม", "นมสด", "เผือก", "ลาเต้", "มอคค่า", "คาปูชิโน", "เอสเพรสโซ"
+        ]
     };
 
-    let cart = { "ส้ม (โหล)": 1, "สับปะรด ปั่น (กล่อง)": 1, "แตงโม (กล่อง)": 1, "มะพร้าว (กล่อง)": 1, "มะม่วง (กล่อง)": 1 };
-    let receivedWeights = {}; // เก็บน้ำหนักตอนชั่งเข้า
+    let cart = {};
 
     function initOrderTab() {
         const container = document.getElementById('product-container');
@@ -236,7 +254,6 @@
         document.getElementById(`tab-${tabId}`).classList.add('active');
         btn.classList.add('active');
         
-        // ซ่อนตะกร้าถ้าไม่ได้อยู่หน้าสั่งของ
         document.getElementById('cart-bar').style.display = tabId === 'order' ? 'flex' : 'none';
     }
 
@@ -268,15 +285,17 @@
         document.getElementById('total-qty').innerText = Object.values(cart).reduce((a, b) => a + b, 0);
     }
 
-    // ================= ฟังก์ชัน Firebase (คลาวด์) =================
-    
-    // 1. บันทึกออเดอร์ขึ้นคลาวด์ (ตอนกลางคืน)
     async function saveOrderToCloud() {
+        const total = Object.values(cart).reduce((a, b) => a + b, 0);
+        if (total === 0) {
+            alert("ตะกร้าว่างเปล่า กรุณาเลือกสินค้าก่อนบันทึกครับ");
+            return;
+        }
+
         const btn = document.querySelector('.btn-save-cloud');
         btn.innerText = "กำลังบันทึก...";
         
         try {
-            // ใช้ชื่อไฟล์เป็นวันที่ เช่น "2026-03-31"
             const dateStr = new Date().toLocaleDateString('en-CA'); 
             await window.setDoc(window.doc(window.db, "daily_orders", dateStr), {
                 orderItems: cart,
@@ -293,7 +312,6 @@
         }
     }
 
-    // 2. ดึงข้อมูลออเดอร์มาชั่งน้ำหนัก (ตอนเช้า)
     async function loadOrderFromCloud() {
         const btn = document.querySelector('.btn-load');
         btn.innerText = "กำลังโหลดข้อมูล...";
@@ -313,6 +331,7 @@
         } catch (e) {
             console.error(e);
             alert("โหลดข้อมูลไม่ได้ ลองใหม่อีกครั้งครับ");
+            btn.innerText = "⬇️ โหลดออเดอร์ที่สั่งเมื่อคืน";
         }
     }
 
@@ -322,7 +341,6 @@
         
         let hasItems = false;
         for (const [catName, items] of Object.entries(categories)) {
-            // เช็คว่าหมวดนี้ต้องชั่งน้ำหนักไหม (มีคำว่าผลไม้)
             const needsWeight = catName.includes("ผลไม้"); 
             
             const itemsToReceive = items.filter(item => savedCart[item] > 0);
@@ -355,10 +373,11 @@
         
         if (hasItems) {
             container.innerHTML += `<button class="action-btn" style="background:var(--primary); color:white; margin-top:20px;">ยืนยันการรับของเข้า</button>`;
+        } else {
+            container.innerHTML = `<p style="text-align: center; color: #888; margin-top: 30px;">ยังไม่มีรายการสินค้าที่บันทึกไว้ครับ</p>`;
         }
     }
 
-    // Modal Control
     function openCart() { renderCartItems(); document.getElementById('cart-modal').style.display = 'flex'; }
     function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
     
@@ -366,15 +385,66 @@
         const list = document.getElementById('cart-list');
         list.innerHTML = '';
         const items = Object.entries(cart).filter(([_, qty]) => qty > 0);
-        if (items.length === 0) list.innerHTML = '<div style="text-align:center; color:#888; margin-top:30px;">ไม่มีสินค้าในตะกร้า</div>';
-        items.forEach(([item, qty]) => {
-            list.innerHTML += `<div class="cart-item"><span>${item}</span> <strong>${qty}</strong></div>`;
+        if (items.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:#888; margin-top:30px;">ไม่มีสินค้าในตะกร้า</div>';
+            return;
+        }
+        
+        for (const [catName, itemsList] of Object.entries(categories)) {
+            const catItems = itemsList.filter(item => cart[item] > 0);
+            if (catItems.length > 0) {
+                list.innerHTML += `<div style="font-weight:bold; color:#555; margin-top:15px;">${catName}</div>`;
+                catItems.forEach(item => {
+                    list.innerHTML += `
+                        <div class="cart-item">
+                            <div style="flex-grow: 1;">${item}</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button class="btn-minus" onclick="updateQty('${item}', -1)">-</button>
+                                <input type="number" inputmode="numeric" class="qty-input" value="${cart[item]}" oninput="typeQty('${item}', this.value)" style="width: 40px; text-align: center; border: none; font-size: 16px; font-weight: bold; color: var(--primary);">
+                                <button class="btn-plus" onclick="updateQty('${item}', 1)">+</button>
+                            </div>
+                        </div>`;
+                });
+            }
+        }
+    }
+
+    function clearCart() {
+        if(confirm("ต้องการล้างรายการทั้งหมดใช่หรือไม่?")) {
+            for (const item in cart) { cart[item] = 0; updateUI(item); }
+            cart = {};
+            closeCart();
+        }
+    }
+
+    function copyToClipboard() {
+        const total = Object.values(cart).reduce((sum, val) => sum + val, 0);
+        if (total === 0) {
+            alert("กรุณาเลือกสินค้าก่อนคัดลอกครับ");
+            return;
+        }
+
+        const date = new Date().toLocaleDateString('th-TH');
+        let text = `📦 รายการสั่งของ (${date})\n\n`;
+
+        for (const [catName, items] of Object.entries(categories)) {
+            const catItems = items.filter(item => cart[item] > 0);
+            if (catItems.length > 0) {
+                text += `${catName}\n`;
+                catItems.forEach(item => {
+                    text += `- ${item} x ${cart[item]}\n`;
+                });
+                text += `\n`;
+            }
+        }
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert("✅ คัดลอกข้อความเรียบร้อยแล้ว นำไปวางใน LINE ได้เลยครับ");
+        }).catch(err => {
+            alert("ไม่สามารถคัดลอกได้โดยอัตโนมัติ กรุณาเลือกข้อความแล้วกดคัดลอกเองครับ");
         });
     }
 
-    function copyToClipboard() { /* โค้ดคัดลอกแบบเดิม */ }
-
-    // เริ่มต้นระบบ
     initOrderTab();
 </script>
 </body>
