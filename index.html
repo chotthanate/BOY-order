@@ -9,27 +9,35 @@
         * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { margin: 0; background-color: var(--bg); color: var(--text); padding-bottom: calc(100px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color: transparent; }
         header { background-color: var(--primary); color: white; padding: calc(15px + env(safe-area-inset-top)) 20px 15px; text-align: center; font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
         .tab-menu { display: flex; background: white; position: sticky; top: calc(56px + env(safe-area-inset-top)); z-index: 9; border-bottom: 1px solid #eee; }
         .tab-btn { flex: 1; padding: 15px 0; border: none; background: none; font-size: 15px; color: #888; font-weight: bold; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
         .tab-content { display: none; padding: 15px; }
         .tab-content.active { display: block; }
+
         .category-title { margin: 20px 0 10px; font-size: 18px; border-bottom: 2px solid #ddd; padding-bottom: 5px; color: #555; font-weight: bold; }
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .product-card { background: var(--card-bg); border-radius: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; min-height: 110px; border: 1px solid #eee; overflow: hidden; }
-        .tap-zone { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 15px 10px; }
-        .product-name { font-size: 14px; font-weight: bold; }
-        .controls { display: flex; align-items: center; justify-content: space-between; background: #f9f9f9; padding: 8px 12px; border-top: 1px solid #eee; }
-        .btn-minus, .btn-plus { background: #e0e0e0; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: bold; color: #555; }
+        
+        .product-card { background: var(--card-bg); border-radius: 12px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; overflow: hidden; padding-bottom: 5px; }
+        .product-name { font-size: 14px; font-weight: bold; padding: 10px 5px; flex-grow: 1; display: flex; align-items: center; justify-content: center; line-height: 1.3; }
+        
+        .controls { display: flex; align-items: center; justify-content: center; background: #f9f9f9; padding: 5px; }
+        .btn-minus, .btn-plus { background: #e0e0e0; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: bold; color: #555; cursor: pointer; }
         .btn-plus { background: #e8f5e9; color: var(--primary); }
-        .qty-input { width: 45px; text-align: center; font-size: 16px; font-weight: bold; color: var(--primary); border: none; background: transparent; }
+        .qty-input { width: 40px; text-align: center; font-size: 16px; font-weight: bold; color: var(--primary); border: none; background: transparent; outline: none; }
+        
+        .weight-input { width: 90%; margin: 5px auto; padding: 8px; border: 1px dashed #ccc; border-radius: 6px; text-align: center; font-size: 14px; }
+        
         .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 30; flex-direction: column; justify-content: flex-end; }
         .modal-content { background: white; border-radius: 20px 20px 0 0; padding: 20px; max-height: 85vh; display: flex; flex-direction: column; }
         .cart-list { overflow-y: auto; flex-grow: 1; }
         .btn-main { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; margin-bottom: 10px; color: white; }
-        .status-card { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #eee; }
-        .weight-input { width: 80px; padding: 8px; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-weight: bold; }
+        
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+        .btn-add { background: var(--secondary); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -42,9 +50,23 @@
     <button class="tab-btn" id="tab-btn-return" onclick="switchTab('return')">🔄 คืนของ</button>
 </div>
 
-<div id="tab-order" class="tab-content active"><div id="product-container"></div></div>
-<div id="tab-receive" class="tab-content"><div id="receive-list"></div></div>
-<div id="tab-return" class="tab-content"><div id="return-list"></div></div>
+<div id="tab-order" class="tab-content active"><div id="order-container"></div></div>
+
+<div id="tab-receive" class="tab-content">
+    <p style="text-align: center; color: #888; font-size: 14px;">รายการเรียงตามหมวดหมู่ สามารถปรับเพิ่ม/ลดได้</p>
+    <div id="receive-container"></div>
+    <button class="btn-main" style="background:var(--primary); margin-top:20px;" onclick="confirmReceive()">✅ บันทึกรับสินค้าเข้าชีท</button>
+</div>
+
+<div id="tab-return" class="tab-content">
+    <div class="search-box">
+        <input type="text" id="return-search" list="all-items-datalist" class="search-input" placeholder="พิมพ์ชื่อเพื่อค้นหา...">
+        <datalist id="all-items-datalist"></datalist>
+        <button class="btn-add" onclick="addReturnItem()">เพิ่ม</button>
+    </div>
+    <div id="return-container"></div>
+    <button class="btn-main" style="background:var(--danger); margin-top:20px;" onclick="confirmReturn()">🔴 บันทึกคืนของเข้าชีท</button>
+</div>
 
 <div class="cart-bar" id="cart-bar">
     <div style="font-size: 18px; font-weight: bold;">รวม: <span id="total-qty">0</span> ชิ้น</div>
@@ -58,8 +80,8 @@
             <button onclick="closeCart()" style="border:none; background:none; font-size:24px;">×</button>
         </div>
         <div id="cart-list" class="cart-list"></div>
-        <button class="btn-main" style="background:var(--secondary)" onclick="saveAndSend()">💾 ส่งข้อมูลและบันทึก (Cloud)</button>
-        <button class="btn-main" style="background:#ffebee; color:var(--danger)" onclick="clearCart()">🗑️ ล้างทั้งหมด</button>
+        <button class="btn-main" id="btn-cloud-send" style="background:var(--secondary)" onclick="saveAndSend()">💾 ส่งข้อมูลและบันทึก (Cloud)</button>
+        <button class="btn-main" style="background:#ffebee; color:var(--danger)" onclick="clearOrderCart()">🗑️ ล้างตะกร้าสั่งของ</button>
     </div>
 </div>
 
@@ -78,64 +100,183 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const dateKey = new Date().toLocaleDateString('en-CA');
-
-    // ระบบดึงข้อมูลจาก Cloud มาโชว์หน้า "รับสินค้า" อัตโนมัติ
-    onSnapshot(doc(db, "daily_orders", dateKey), (docSnap) => {
-        if (docSnap.exists()) renderStatusPages(docSnap.data().cart);
-    });
-
     window.db = db; window.setDoc = setDoc; window.doc = doc;
+
+    // Listener สำหรับดึงข้อมูลมาหน้า "รับสินค้า" โดยไม่ทับของที่แก้ไขไว้
+    const dateKey = new Date().toLocaleDateString('en-CA');
+    onSnapshot(doc(db, "daily_orders", dateKey), (docSnap) => {
+        if (docSnap.exists()) {
+            let cloudCart = docSnap.data().cart;
+            // เพิ่มเฉพาะรายการที่เพิ่งสั่งมาใหม่ โดยไม่ลบ/ทับ ของที่ผู้ใช้แก้ไว้ในเครื่อง
+            for (let item in cloudCart) {
+                if (receiveQty[item] === undefined && cloudCart[item] > 0) {
+                    receiveQty[item] = cloudCart[item];
+                }
+            }
+            saveReceiveLocal();
+            renderReceive();
+        }
+    });
 </script>
 
 <script>
+    // ฐานข้อมูลสินค้าใหม่ทั้งหมด
     const categories = {
-        "🍉 ผลไม้ (ใส่กล่อง)": ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น", "สับปะรด สกัด", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "เมล่อน (กล่อง)", "แคนตาลูป (กล่อง)", "มะละกอ (กล่อง)"],
-        "🍍 ผลไม้ (โชว์)": ["แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิ้ลเขียว", "แอปเปิ้ลแดง", "แก้วมังกร ใช้", "แก้วมังกรโชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย", "ฟักทอง"],
-        "🥛 อื่นๆ": ["น้ำมะพร้าว", "มะนาว", "โยเกิร์ต", "นมคาร์เนชั่น", "นมข้นหวาน", "น้ำเชื่อม", "นมอัลมอนด์", "ผงโกโก้", "ผงชาเขียว", "ผงชาไทย"]
+        "🍉 ผลไม้ (ใส่กล่อง)": ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "น้ำมะพร้าว (ขวด)", "น้ำมะนาว (ขวด)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "มะละกอ (กล่อง)", "เมลอน (กล่อง)", "แคนตาลูป (กล่อง)"],
+        "🍍 ผลไม้": ["แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิลเขียว", "แอปเปิลแดง", "แก้วมังกร ใช้", "แก้วมังกร โชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย", "มะเขือเทศ", "เปปเปอร์มินท์", "บีทรูท", "ลูกมะพร้าว", "มะละกอ"],
+        "🥛 อื่นๆ": ["โยเกิร์ต", "นมข้นจืด คาร์เนชั่น (ถุง)", "นมข้นหวาน คาร์เนชั่น (ถุง)", "น้ำเชื่อม (ถุง)", "นมอัลมอนด์", "นมอัลมอนด์อโวคาโด", "นมโอ๊ต", "น้ำผึ้ง (ขวด)", "น้ำผึ้งเบอร์รี", "โค้ก", "ติ่งฟง สตรอว์เบอร์รี", "ติ่งฟง กีวี", "คาราเมล", "โซดา (ลัง)", "M150 (แพ็ก)", "ยาคูลท์ (ขวด)", "นมหมี (แพ็ก)", "เกลือ (กระสอบ)"],
+        "🥫 ผลไม้อบแห้งกระปุก": ["ลูกพรุน (ฝาแดง)", "กีวี่ (ฝาแดง)", "ลูกไน๋เชื่อม (ฝาแดง)", "บ๊วย 5 รส (ฝาแดง)", "บ๊วยเค็ม (ฝาแดง)", "บ๊วยชิ้น (ฝาแดง)", "เชอร์รี่ (ฝาแดง)", "มะเขือเทศ (ฝาแดง)", "มะม่วงหยี", "มะขามจี๊ดจ๊าด", "สับปะรดอบ", "มะนาว อบแห้ง", "มะละกอ อบแห้ง", "ลูกพรุนหวาน (ฝาม่วง)", "ลูกไหนแช่อิ่ม (ฝาเขียว)", "ลูกพลัมอบแห้ง (ฝาเขียว)", "บ๊วยชิ้นอบแห้ง (ฝาชมพู)", "บ๊วยอบแห้งรสสตรอเบอร์รี่ (ฝาชมพู)", "บ๊วยรสน้ำผึ้ง (ฝาชมพู)", "บ๊วยเค็ม (ฝาเขียว)", "บ๊วยรสหวาน (ฝาม่วง)", "บ๊วยห้ารส (ฝาเขียว)", "มะเขือราชินีอบแห้ง (ฝาเขียว)", "มะขาม 3 รส (ฝาเขียว)", "มะขามป้อมแช่อิ่ม (ฝาเขียว)", "เชอร์รี่แช่อิ่ม (ฝาเขียว)", "เชอร์รี่อบแห้ง (ฝาม่วง)"],
+        "🍬 ขนม": ["มันหนึบจิ๋ว", "มันหนึบชิ้นใหญ่", "ผักอบกรอบ ถุงเขียว 80 กรัม", "ผักอบกรอว ถุงม่วง 100 กรัม", "ขนุนอบกรอบ", "หมึกบุกหม่าล่า", "เค้กหลันลี่", "เค้กไข่ยิ้ม", "เกาลัดมีเปลือก", "เกาลัดปอกเปลือก", "วอลนัท", "แครนเบอร์รี่ชีส (10 บาท)", "ช็อคบอล", "เยลลี่ผลไม้", "บ๊วย 2 บาท", "ตุ๊บตั๊บ", "ท้อแดง 3 บาท", "ข้าวโอ๊ต", "นูกัต", "บิสกิตแบน 4 บาท", "ปีโป้กรอบ", "เยลลี่", "โมจิ ช็อคโกแลตดูไบ"],
+        "❄️ ผลไม้แช่แข็ง": ["มิกซ์เบอร์รี่", "สตรอว์เบอร์รี่", "บลูเบอร์รี่", "ลิ้นจี่", "ลำไย", "ราสเบอร์รี่", "แครนเบอร์รี่", "มัลเบอร์รี่"],
+        "📦 บรรจุภัณฑ์": ["แก้วขาว", "แก้วดำ", "ฝา", "หลอดไม่ห่อฟิล์ม", "หลอดห่อฟิล์ม", "หลอดไข่มุก ห่อฟิล์ม สีดำ", "สายเดี่ยว", "ถุง grab", "ถุง 6x11", "ถุง 7x15"],
+        "🍪 ท็อปปิ้ง": ["ไข่มุก", "ผงโอริโอ้บดหยาบ", "ผงโอริโอ้บดละเอียด", "โอริโอ้", "ปีโป้", "วิปครีม"],
+        "☕ ผง": ["ครีมเทียม", "โกโก้", "ช็อคโกแลต", "ไมโล", "โอวัลติน", "ชาเขียว", "ชาไทย", "ชานม", "นมสด", "เผือก", "ลาเต้", "มอคค่า", "คาปูชิโน", "เอสเพรสโซ"]
     };
 
-    // --- ระบบจำข้อมูล ---
-    let cart = JSON.parse(localStorage.getItem('boy_v2_storage')) || {};
+    // ความจำแยกส่วน (Order, Receive, Return) ไม่ตีกันเวลาปัดจอ!
+    let orderCart = JSON.parse(localStorage.getItem('boy_v2_order')) || {};
+    let receiveQty = JSON.parse(localStorage.getItem('boy_v2_receive_qty')) || {};
+    let receiveWgt = JSON.parse(localStorage.getItem('boy_v2_receive_wgt')) || {};
+    let returnQty = JSON.parse(localStorage.getItem('boy_v2_return_qty')) || {};
+
+    const defaultReturn = ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "น้ำมะพร้าว (ขวด)"];
+    // บังคับให้หน้าคืนของมีรายการตั้งต้น
+    defaultReturn.forEach(item => { if(returnQty[item] === undefined) returnQty[item] = 0; });
 
     function init() {
-        const container = document.getElementById('product-container');
-        container.innerHTML = '';
+        // สร้างรายการสั่งของ
+        const orderContainer = document.getElementById('order-container');
+        orderContainer.innerHTML = '';
+        
+        // สร้าง Datalist สำหรับค้นหา
+        const datalist = document.getElementById('all-items-datalist');
+        datalist.innerHTML = '';
+
         for (const [cat, items] of Object.entries(categories)) {
-            container.innerHTML += `<div class="category-title">${cat}</div>`;
+            orderContainer.innerHTML += `<div class="category-title">${cat}</div>`;
             const grid = document.createElement('div'); grid.className = 'grid';
+            
             items.forEach(item => {
-                const q = cart[item] || 0;
+                // ใส่ของทั้งหมดลง Datalist เพื่อค้นหาในหน้าคืนของ
+                datalist.innerHTML += `<option value="${item}">`;
+                
+                // สร้างการ์ดสั่งของ
+                const q = orderCart[item] || 0;
                 grid.innerHTML += `
                     <div class="product-card">
-                        <div class="tap-zone" onclick="updateQty('${item}', 1)"><div class="product-name">${item}</div></div>
+                        <div class="product-name" onclick="updateOrderQty('${item}', 1)">${item}</div>
                         <div class="controls">
-                            <button class="btn-minus" id="minus-${item}" onclick="updateQty('${item}', -1)" style="visibility:${q>0?'visible':'hidden'}">-</button>
-                            <input type="number" class="qty-input" id="qty-${item}" value="${q}" readonly>
-                            <button class="btn-plus" onclick="updateQty('${item}', 1)">+</button>
+                            <button class="btn-minus" id="minus-ord-${item}" onclick="updateOrderQty('${item}', -1)" style="visibility:${q>0?'visible':'hidden'}">-</button>
+                            <input type="number" class="qty-input" id="qty-ord-${item}" value="${q}" readonly>
+                            <button class="btn-plus" onclick="updateOrderQty('${item}', 1)">+</button>
                         </div>
                     </div>`;
             });
-            container.appendChild(grid);
+            orderContainer.appendChild(grid);
         }
-        updateTotal();
+        updateOrderTotal();
+        renderReceive();
+        renderReturn();
     }
 
-    function updateQty(item, change) {
-        cart[item] = (cart[item] || 0) + change;
-        if (cart[item] < 0) cart[item] = 0;
-        localStorage.setItem('boy_v2_storage', JSON.stringify(cart));
-        const input = document.getElementById(`qty-${item}`);
+    // --- ระบบสั่งของ ---
+    function updateOrderQty(item, change) {
+        orderCart[item] = (orderCart[item] || 0) + change;
+        if (orderCart[item] < 0) orderCart[item] = 0;
+        localStorage.setItem('boy_v2_order', JSON.stringify(orderCart));
+        
+        const input = document.getElementById(`qty-ord-${item}`);
         if(input) {
-            input.value = cart[item];
-            document.getElementById(`minus-${item}`).style.visibility = cart[item] > 0 ? 'visible' : 'hidden';
+            input.value = orderCart[item];
+            document.getElementById(`minus-ord-${item}`).style.visibility = orderCart[item] > 0 ? 'visible' : 'hidden';
         }
-        updateTotal();
+        updateOrderTotal();
         if(document.getElementById('cart-modal').style.display === 'flex') renderCartItems();
     }
+    function updateOrderTotal() { document.getElementById('total-qty').innerText = Object.values(orderCart).reduce((a, b) => a + b, 0); }
 
-    function updateTotal() { document.getElementById('total-qty').innerText = Object.values(cart).reduce((a, b) => a + b, 0); }
+    // --- ระบบรับสินค้า (แก้ไข ลบ เพิ่ม ได้ และเรียงหมวดหมู่เป๊ะๆ) ---
+    function renderReceive() {
+        const container = document.getElementById('receive-container');
+        container.innerHTML = '';
+        let hasItem = false;
 
+        // วนตาม categories เพื่อล็อกการเรียงลำดับให้เหมือนหน้าสั่งของเป๊ะ
+        for (const [cat, items] of Object.entries(categories)) {
+            const catItems = items.filter(i => receiveQty[i] !== undefined);
+            if (catItems.length > 0) {
+                hasItem = true;
+                container.innerHTML += `<div class="category-title" style="color:var(--secondary)">${cat}</div>`;
+                const grid = document.createElement('div'); grid.className = 'grid';
+                
+                catItems.forEach(item => {
+                    const q = receiveQty[item] || 0;
+                    const w = receiveWgt[item] || "";
+                    grid.innerHTML += `
+                        <div class="product-card" style="border-color: #bbdefb;">
+                            <div class="product-name" style="padding-bottom:5px;">${item}</div>
+                            <div class="controls" style="background:white;">
+                                <button class="btn-minus" onclick="updateRecQty('${item}', -1)">-</button>
+                                <input type="number" class="qty-input" value="${q}" readonly>
+                                <button class="btn-plus" onclick="updateRecQty('${item}', 1)">+</button>
+                            </div>
+                            <input type="text" class="weight-input" placeholder="นน.(กรัม) / โน้ต" value="${w}" oninput="updateRecWgt('${item}', this.value)">
+                        </div>`;
+                });
+                container.appendChild(grid);
+            }
+        }
+        if (!hasItem) container.innerHTML = `<p style="text-align:center; color:#999; margin:30px 0;">รอข้อมูลการสั่งของ...</p>`;
+    }
+
+    function updateRecQty(item, change) {
+        receiveQty[item] = (receiveQty[item] || 0) + change;
+        if (receiveQty[item] < 0) receiveQty[item] = 0;
+        saveReceiveLocal(); renderReceive();
+    }
+    function updateRecWgt(item, val) { receiveWgt[item] = val; saveReceiveLocal(); }
+    function saveReceiveLocal() {
+        localStorage.setItem('boy_v2_receive_qty', JSON.stringify(receiveQty));
+        localStorage.setItem('boy_v2_receive_wgt', JSON.stringify(receiveWgt));
+    }
+
+    // --- ระบบคืนของ (ค้นหาอัจฉริยะ) ---
+    function renderReturn() {
+        const container = document.getElementById('return-container');
+        container.innerHTML = '<div class="grid" id="return-grid"></div>';
+        const grid = document.getElementById('return-grid');
+        
+        Object.keys(returnQty).forEach(item => {
+            const q = returnQty[item];
+            grid.innerHTML += `
+                <div class="product-card" style="border-color:#ffcdd2;">
+                    <div class="product-name" style="padding-bottom:5px;">${item}</div>
+                    <div class="controls" style="background:white;">
+                        <button class="btn-minus" onclick="updateRetQty('${item}', -1)">-</button>
+                        <input type="number" class="qty-input" value="${q}" readonly style="color:var(--danger)">
+                        <button class="btn-plus" style="color:var(--danger); background:#ffebee;" onclick="updateRetQty('${item}', 1)">+</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function addReturnItem() {
+        const input = document.getElementById('return-search');
+        const item = input.value.trim();
+        if (item && returnQty[item] === undefined) {
+            returnQty[item] = 0;
+            saveReturnLocal(); renderReturn();
+            input.value = ''; // เคลียร์ช่องค้นหา
+        }
+    }
+    function updateRetQty(item, change) {
+        returnQty[item] = (returnQty[item] || 0) + change;
+        if (returnQty[item] < 0) returnQty[item] = 0;
+        saveReturnLocal(); renderReturn();
+    }
+    function saveReturnLocal() { localStorage.setItem('boy_v2_return_qty', JSON.stringify(returnQty)); }
+
+    // --- เปลี่ยนแท็บ ---
     function switchTab(id) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -144,44 +285,34 @@
         document.getElementById('cart-bar').style.display = id === 'order' ? 'flex' : 'none';
     }
 
+    // --- Modal สรุปตะกร้า ---
     function openCart() { renderCartItems(); document.getElementById('cart-modal').style.display = 'flex'; }
     function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
-
     function renderCartItems() {
         const list = document.getElementById('cart-list'); list.innerHTML = '';
         for (const [cat, items] of Object.entries(categories)) {
-            const catItems = items.filter(i => cart[i] > 0);
+            const catItems = items.filter(i => orderCart[i] > 0);
             if(catItems.length > 0) {
-                list.innerHTML += `<div style="font-weight:bold; color:var(--primary); margin:10px 0;">${cat}</div>`;
-                catItems.forEach(i => {
-                    list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px dashed #eee;"><span>${i}</span> <b>${cart[i]}</b></div>`;
-                });
+                list.innerHTML += `<div style="font-weight:bold; color:var(--primary); margin:15px 0 5px;">${cat}</div>`;
+                catItems.forEach(i => { list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px dashed #eee;"><span>${i}</span> <b>${orderCart[i]}</b></div>`; });
             }
         }
     }
 
     async function saveAndSend() {
+        const btn = document.getElementById('btn-cloud-send'); btn.innerText = "กำลังบันทึก...";
         try {
             const dateStr = new Date().toLocaleDateString('en-CA');
-            await window.setDoc(window.doc(window.db, "daily_orders", dateStr), { cart, timestamp: new Date().toISOString() });
-            alert("✅ บันทึกขึ้นระบบเรียบร้อย!");
+            await window.setDoc(window.doc(window.db, "daily_orders", dateStr), { cart: orderCart, timestamp: new Date().toISOString() });
+            alert("✅ บันทึกสั่งของขึ้นระบบเรียบร้อย!");
+            btn.innerText = "💾 ส่งข้อมูลและบันทึก (Cloud)";
             closeCart();
-        } catch (e) { alert("เกิดข้อผิดพลาดในการบันทึก"); }
+        } catch (e) { alert("เกิดข้อผิดพลาดในการบันทึก"); btn.innerText = "💾 ส่งข้อมูลและบันทึก (Cloud)"; }
     }
 
-    function renderStatusPages(cloudData) {
-        const recList = document.getElementById('receive-list');
-        const retList = document.getElementById('return-list');
-        recList.innerHTML = ''; retList.innerHTML = '';
-        Object.entries(cloudData).forEach(([item, q]) => {
-            if(q > 0) {
-                const html = `<div class="status-card"><b>${item}</b> (สั่ง: ${q})<br><input type="number" class="weight-input" placeholder="กรัม"> กรัม</div>`;
-                recList.innerHTML += html; retList.innerHTML += html;
-            }
-        });
-    }
-
-    function clearCart() { if(confirm("ล้างข้อมูล?")) { cart = {}; localStorage.removeItem('boy_v2_storage'); init(); closeCart(); } }
+    function clearOrderCart() { if(confirm("ล้างตะกร้าสั่งของ?")) { orderCart = {}; localStorage.removeItem('boy_v2_order'); init(); closeCart(); } }
+    function confirmReceive() { alert("รอดำเนินการต่อ Google Sheets ครับ"); }
+    function confirmReturn() { alert("รอดำเนินการต่อ Google Sheets ครับ"); }
 
     init();
 </script>
