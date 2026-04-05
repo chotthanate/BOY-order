@@ -25,8 +25,8 @@
         .category-title { margin: 25px 0 12px; font-size: 18px; border-bottom: 2px solid var(--primary); padding-bottom: 5px; color: var(--primary-dark); font-weight: bold; display: inline-block;}
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         
-        .product-card { background: var(--card-bg); border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e0f2f1; overflow: hidden; padding-bottom: 5px; }
-        .product-name { font-size: 14px; font-weight: bold; padding: 10px 5px; flex-grow: 1; display: flex; align-items: center; justify-content: center; line-height: 1.3; color: var(--text);}
+        .product-card { background: var(--card-bg); border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e0f2f1; overflow: hidden; padding-bottom: 0px; }
+        .product-name { font-size: 14px; font-weight: bold; padding: 12px 5px; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.3; color: var(--text);}
         
         .controls { display: flex; align-items: center; justify-content: center; background: #fdfdfd; padding: 5px; border-top: 1px solid #f0f0f0; }
         .btn-minus, .btn-plus { background: #eeeeee; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 18px; font-weight: bold; color: #666; cursor: pointer;}
@@ -35,12 +35,12 @@
         .qty-input { width: 40px; text-align: center; font-size: 16px; font-weight: bold; color: var(--primary-dark); border: none; background: transparent; outline: none; }
         .qty-input-danger { color: var(--danger); }
         
-        .weight-input { width: 90%; margin: 5px auto 10px; padding: 8px; border: 1px solid #cfd8dc; border-radius: 6px; text-align: center; font-size: 14px; background: #f8f9fa; color: var(--text); font-weight: bold; transition: 0.2s;}
-        .weight-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);}
+        .weight-input { width: 100%; margin: 0; padding: 10px; border: 1px solid #cfd8dc; border-radius: 6px; text-align: center; font-size: 15px; background: #fff; color: var(--text); font-weight: bold; transition: 0.2s;}
+        .weight-input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);}
         
         .swipe-container { position: relative; border-radius: 12px; background: var(--danger); overflow: hidden; border: 1px solid #eaeaea; }
         .swipe-background { position: absolute; top: 0; right: 0; bottom: 0; width: 80px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; z-index: 1; }
-        .swipe-card { background: var(--card-bg); z-index: 2; position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 5px; }
+        .swipe-card { background: var(--card-bg); z-index: 2; position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
 
         .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; z-index: 20; }
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 30; flex-direction: column; justify-content: flex-end; }
@@ -90,7 +90,7 @@
         <div id="autocomplete-list-rec" class="autocomplete-items"></div>
         <button class="btn-add" onclick="addReceiveItem()">เพิ่ม</button>
     </div>
-    <p style="text-align: center; color: #888; font-size: 13px; margin-top:0;">💡 ลดจำนวนเหลือ 0 หรือ <b style="color:var(--danger)">ปัดซ้าย</b> เพื่อลบรายการ</p>
+    <p style="text-align: center; color: #888; font-size: 13px; margin-top:0;">💡 <b style="color:var(--danger)">ปัดซ้ายที่การ์ด</b> เพื่อลบรายการ</p>
     <div id="receive-container"></div>
     <button class="btn-main" style="background:var(--primary); margin-top:20px;" onclick="confirmReceive()">✅ ยืนยันรับสินค้าเข้าชีท</button>
 </div>
@@ -139,8 +139,7 @@
             <h3 style="margin-top:0; color:var(--primary); font-size:16px;">➕ เพิ่มสินค้าใหม่</h3>
             <div class="form-group">
                 <label class="form-label">หมวดหมู่</label>
-                <select id="new-item-cat" class="form-control">
-                    </select>
+                <select id="new-item-cat" class="form-control"></select>
             </div>
             <div class="form-group">
                 <label class="form-label">ชื่อสินค้าใหม่</label>
@@ -161,9 +160,8 @@
 </div>
 
 <script>
-    // เดี๋ยวเราเอา URL จาก Google Apps Script มาแปะตรงนี้ครับ
-    const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzjXDqtvyXIX9n7iA8T1LK6cqkT1f3D3TjamCApMLQBFIKT4Ab4BW9VDtysV-3yLnbw/exec"; 
-    // ตัวอย่าง: "https://script.google.com/macros/s/AKfyc.../exec"
+    // ใส่ลิงก์ที่ก๊อปมาจาก Apps Script ลงในนี้ครับ (ถ้ายาวมากๆ แปะในฟันหนูเลย)
+    const WEBHOOK_URL = ""; 
 </script>
 
 <script type="module">
@@ -197,9 +195,9 @@
 </script>
 
 <script>
-    // ฐานข้อมูลเริ่มต้น
+    // ฐานข้อมูลเริ่มต้น (อัปเดตชื่อสับปะรดเรียบร้อย)
     const baseCategories = {
-        "🍉 ผลไม้ (ใส่กล่อง)": ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "น้ำมะพร้าว (ขวด)", "น้ำมะนาว (ขวด)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "มะละกอ (กล่อง)", "เมลอน (กล่อง)", "แคนตาลูป (กล่อง)"],
+        "🍉 ผลไม้ (ใส่กล่อง)": ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด (ปั่น) (กล่อง)", "สับปะรด (สกัด) (กล่อง)", "มะพร้าว (กล่อง)", "มะม่วง (กล่อง)", "เสาวรส (ถุง)", "น้ำมะพร้าว (ขวด)", "น้ำมะนาว (ขวด)", "ขิง (กล่อง)", "กระชาย (กล่อง)", "กีวี่ (กล่อง)", "มะละกอ (กล่อง)", "เมลอน (กล่อง)", "แคนตาลูป (กล่อง)"],
         "🍍 ผลไม้": ["แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก", "แครอท", "แตงกวา", "อโวคาโด ดิบ", "อโวคาโดสุก", "แอปเปิลเขียว", "แอปเปิลแดง", "แก้วมังกร ใช้", "แก้วมังกร โชว์", "ฝรั่ง", "ส้ม", "เสาวรส", "เซเลอรี่", "เมล่อน", "แคนตาลูป", "ขิง", "กระชาย", "มะเขือเทศ", "เปปเปอร์มินท์", "บีทรูท", "ลูกมะพร้าว", "มะละกอ"],
         "🥛 อื่นๆ": ["โยเกิร์ต", "นมข้นจืด คาร์เนชั่น (ถุง)", "นมข้นหวาน คาร์เนชั่น (ถุง)", "น้ำเชื่อม (ถุง)", "นมอัลมอนด์", "นมอัลมอนด์อโวคาโด", "นมโอ๊ต", "น้ำผึ้ง (ขวด)", "น้ำผึ้งเบอร์รี", "โค้ก", "ติ่งฟง สตรอว์เบอร์รี", "ติ่งฟง กีวี", "คาราเมล", "โซดา (ลัง)", "M150 (แพ็ก)", "ยาคูลท์ (ขวด)", "นมหมี (แพ็ก)", "เกลือ (กระสอบ)"],
         "🥫 ผลไม้อบแห้งกระปุก": ["ลูกพรุน (ฝาแดง)", "กีวี่ (ฝาแดง)", "ลูกไน๋เชื่อม (ฝาแดง)", "บ๊วย 5 รส (ฝาแดง)", "บ๊วยเค็ม (ฝาแดง)", "บ๊วยชิ้น (ฝาแดง)", "เชอร์รี่ (ฝาแดง)", "มะเขือเทศ (ฝาแดง)", "มะม่วงหยี", "มะขามจี๊ดจ๊าด", "สับปะรดอบ", "มะนาว อบแห้ง", "มะละกอ อบแห้ง", "ลูกพรุนหวาน (ฝาม่วง)", "ลูกไหนแช่อิ่ม (ฝาเขียว)", "ลูกพลัมอบแห้ง (ฝาเขียว)", "บ๊วยชิ้นอบแห้ง (ฝาชมพู)", "บ๊วยอบแห้งรสสตรอเบอร์รี่ (ฝาชมพู)", "บ๊วยรสน้ำผึ้ง (ฝาชมพู)", "บ๊วยเค็ม (ฝาเขียว)", "บ๊วยรสหวาน (ฝาม่วง)", "บ๊วยห้ารส (ฝาเขียว)", "มะเขือราชินีอบแห้ง (ฝาเขียว)", "มะขาม 3 รส (ฝาเขียว)", "มะขามป้อมแช่อิ่ม (ฝาเขียว)", "เชอร์รี่แช่อิ่ม (ฝาเขียว)", "เชอร์รี่อบแห้ง (ฝาม่วง)"],
@@ -210,13 +208,11 @@
         "☕ ผง": ["ครีมเทียม", "โกโก้", "ช็อคโกแลต", "ไมโล", "โอวัลติน", "ชาเขียว", "ชาไทย", "ชานม", "นมสด", "เผือก", "ลาเต้", "มอคค่า", "คาปูชิโน", "เอสเพรสโซ"]
     };
 
-    // --- ระบบจัดเก็บสินค้าที่เพิ่ม/ลบเอง ---
     let customItems = JSON.parse(localStorage.getItem('boy_v2_custom_items')) || {};
     let hiddenItems = JSON.parse(localStorage.getItem('boy_v2_hidden_items')) || [];
     let activeCategories = {};
     let allItemsList = [];
 
-    // ดึงหมวดหมู่ที่รวมการแก้ไขแล้ว
     function buildCategories() {
         activeCategories = JSON.parse(JSON.stringify(baseCategories));
         for (let cat in customItems) {
@@ -230,7 +226,6 @@
         }
     }
     
-    // สถานะของแอพ และ ข้อมูลตะกร้าต่างๆ
     let appState = JSON.parse(localStorage.getItem('boy_v2_appstate')) || { orderLocked: false, returnLocked: true };
     let orderCart = JSON.parse(localStorage.getItem('boy_v2_order')) || {};
     let receiveQty = JSON.parse(localStorage.getItem('boy_v2_receive_qty')) || {};
@@ -238,12 +233,12 @@
     let returnQty = JSON.parse(localStorage.getItem('boy_v2_return_qty')) || {};
     let returnWgt = JSON.parse(localStorage.getItem('boy_v2_return_wgt')) || {};
 
-    const defaultReturn = ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด ปั่น (กล่อง)", "สับปะรด สกัด (กล่อง)", "น้ำมะพร้าว (ขวด)"];
+    // อัปเดตรายชื่อตั้งต้นหน้าคืนของ
+    const defaultReturn = ["ส้ม (โหล)", "อโวคาโด (กล่อง)", "แตงโม (กล่อง)", "สับปะรด (ปั่น) (กล่อง)", "สับปะรด (สกัด) (กล่อง)", "น้ำมะพร้าว (ขวด)"];
 
     function needsWeight(item) {
         const exceptions = ["แตงโม", "สับปะรด", "กล้วยดิบ", "กล้วยสุก"];
         if (exceptions.includes(item)) return false;
-        // เช็คว่าอยู่ในหมวดผลไม้ไหม (อิงจาก activeCategories)
         if (activeCategories["🍉 ผลไม้ (ใส่กล่อง)"]?.includes(item)) return true;
         if (activeCategories["🍍 ผลไม้"]?.includes(item)) return true;
         return false;
@@ -277,18 +272,12 @@
     function init() {
         buildCategories();
         
-        // เติม dropdown ในหน้าตั้งค่า
-        const catSelect = document.getElementById('new-item-cat');
-        catSelect.innerHTML = '';
-        Object.keys(baseCategories).forEach(cat => {
-            catSelect.innerHTML += `<option value="${cat}">${cat}</option>`;
-        });
+        const catSelect = document.getElementById('new-item-cat'); catSelect.innerHTML = '';
+        Object.keys(baseCategories).forEach(cat => { catSelect.innerHTML += `<option value="${cat}">${cat}</option>`; });
         
-        // เติม Datalist สำหรับลบ
         const dl = document.getElementById('manage-all-items'); dl.innerHTML = '';
         allItemsList.forEach(item => { dl.innerHTML += `<option value="${item}">`; });
 
-        // เซ็ตค่าเริ่มต้นหน้าคืน
         defaultReturn.forEach(item => { if(returnQty[item] === undefined && allItemsList.includes(item)) returnQty[item] = 0; });
 
         renderOrder(); renderReceive(); renderReturn(); updateLocksUI();
@@ -305,24 +294,18 @@
         if(allItemsList.includes(name)) { alert("สินค้านี้มีอยู่แล้วครับ"); return; }
         
         if(!customItems[cat]) customItems[cat] = [];
-        customItems[cat].push(name);
-        localStorage.setItem('boy_v2_custom_items', JSON.stringify(customItems));
+        customItems[cat].push(name); localStorage.setItem('boy_v2_custom_items', JSON.stringify(customItems));
         
         alert(`เพิ่ม "${name}" เข้าหมวด ${cat} เรียบร้อย!`);
-        document.getElementById('new-item-name').value = '';
-        init(); closeManageModal();
+        document.getElementById('new-item-name').value = ''; init(); closeManageModal();
     }
     
     function hideItemFromDB() {
         const name = document.getElementById('delete-item-name').value.trim();
         if(!name || !allItemsList.includes(name)) { alert("ระบุชื่อสินค้าไม่ถูกต้อง หรือไม่มีในระบบ"); return; }
-        
         if(confirm(`ต้องการลบ "${name}" ออกจากระบบทั้งหมดหรือไม่?`)) {
-            hiddenItems.push(name);
-            localStorage.setItem('boy_v2_hidden_items', JSON.stringify(hiddenItems));
-            alert("ลบสินค้าสำเร็จ!");
-            document.getElementById('delete-item-name').value = '';
-            init(); closeManageModal();
+            hiddenItems.push(name); localStorage.setItem('boy_v2_hidden_items', JSON.stringify(hiddenItems));
+            alert("ลบสินค้าสำเร็จ!"); document.getElementById('delete-item-name').value = ''; init(); closeManageModal();
         }
     }
 
@@ -360,7 +343,7 @@
     }
     function updateOrderTotal() { document.getElementById('total-qty').innerText = Object.values(orderCart).reduce((a, b) => a + b, 0); }
 
-    // --- ค้นหาเพิ่มรายการในหน้ารับของ ---
+    // --- รับสินค้า ---
     function showSuggestionsRec(val) {
         const list = document.getElementById('autocomplete-list-rec'); list.innerHTML = '';
         if (!val) return;
@@ -378,7 +361,6 @@
         else { alert("รายการนี้มีอยู่แล้วครับ"); input.value = '';}
     }
 
-    // --- รับสินค้า ---
     function renderReceive() {
         const container = document.getElementById('receive-container'); container.innerHTML = '';
         let hasItem = false;
@@ -390,18 +372,32 @@
                 const grid = document.createElement('div'); grid.className = 'grid';
                 catItems.forEach(item => {
                     const q = receiveQty[item] || 0; const w = receiveWgt[item] || "";
-                    const wHtml = needsWeight(item) ? `<input type="number" class="weight-input" placeholder="น้ำหนัก (กรัม)" value="${w}" oninput="updateRecWgt('${item}', this.value)">` : '';
+                    let controlsHtml = '';
+                    
+                    // ปรับแต่งการ์ด: ถ้านับน้ำหนัก ให้ซ่อนปุ่มบวก/ลบ
+                    if(needsWeight(item)) {
+                        controlsHtml = `
+                        <div style="padding: 10px; background:#f9f9f9; border-top:1px solid #f0f0f0;">
+                            <input type="number" class="weight-input" placeholder="กรอกปริมาณ" value="${w}" oninput="updateRecWgt('${item}', this.value)">
+                        </div>`;
+                    } else {
+                        controlsHtml = `
+                        <div class="controls" style="background:white; border-top:none;">
+                            <button class="btn-minus" onclick="updateRecQty('${item}', -1)">-</button>
+                            <input type="number" class="qty-input" value="${q}" readonly>
+                            <button class="btn-plus" onclick="updateRecQty('${item}', 1)">+</button>
+                        </div>`;
+                    }
+
                     grid.innerHTML += `
                         <div class="swipe-container">
                             <div class="swipe-background">🗑️ ลบ</div>
                             <div class="swipe-card" style="border-color:#e8f5e9;" ontouchstart="swipeStart(event)" ontouchmove="swipeMove(event)" ontouchend="swipeEnd(event, '${item}', 'receive')">
-                                <div class="product-name" style="padding-bottom:5px;">${item}</div>
-                                <div class="controls" style="background:white; border-top:none;">
-                                    <button class="btn-minus" onclick="updateRecQty('${item}', -1)">-</button>
-                                    <input type="number" class="qty-input" value="${q}" readonly>
-                                    <button class="btn-plus" onclick="updateRecQty('${item}', 1)">+</button>
+                                <div class="product-name" style="padding-bottom:5px;">
+                                    ${item}
+                                    ${q > 0 && needsWeight(item) ? `<span style="color:#aaa;font-weight:normal;font-size:12px;display:block;margin-top:4px;">(สั่ง: ${q})</span>` : ''}
                                 </div>
-                                ${wHtml}
+                                ${controlsHtml}
                             </div>
                         </div>`;
                 });
@@ -415,10 +411,9 @@
         let current = receiveQty[item] || 0;
         let newQty = current + change;
         if (newQty <= 0 && current > 0) {
-            // แก้ไข: ถ้ากดยกเลิก จะเด้งกลับไปเป็นจำนวนเดิม
-            if (confirm(`จำนวนเป็น 0 ต้องการลบ "${item}" ออกจากรายการ?`)) { 
+            if (confirm(`ลบ "${item}" ออกจากรายการ?`)) { 
                 delete receiveQty[item]; delete receiveWgt[item]; 
-            } else { receiveQty[item] = current; }
+            } else { receiveQty[item] = current; } // ถ้ายกเลิก ให้กลับเป็นค่าเดิม!
         } else if (newQty < 0) { receiveQty[item] = 0; } else { receiveQty[item] = newQty; }
         saveReceiveLocal(); renderReceive(); 
     }
@@ -454,18 +449,28 @@
         const grid = document.getElementById('return-grid');
         Object.keys(returnQty).forEach(item => {
             const q = returnQty[item]; const w = returnWgt[item] || "";
-            const wHtml = needsWeight(item) ? `<input type="number" class="weight-input" placeholder="น้ำหนัก (กรัม)" value="${w}" oninput="updateRetWgt('${item}', this.value)">` : '';
+            let controlsHtml = '';
+                    
+            if(needsWeight(item)) {
+                controlsHtml = `
+                <div style="padding: 10px; background:#ffebee; border-top:1px solid #ffcdd2;">
+                    <input type="number" class="weight-input" style="border-color:#ef9a9a; color:var(--danger);" placeholder="กรอกปริมาณ" value="${w}" oninput="updateRetWgt('${item}', this.value)">
+                </div>`;
+            } else {
+                controlsHtml = `
+                <div class="controls" style="background:white; border-top:none;">
+                    <button class="btn-minus" onclick="updateRetQty('${item}', -1)">-</button>
+                    <input type="number" class="qty-input qty-input-danger" value="${q}" readonly>
+                    <button class="btn-plus btn-plus-danger" onclick="updateRetQty('${item}', 1)">+</button>
+                </div>`;
+            }
+
             grid.innerHTML += `
                 <div class="swipe-container">
                     <div class="swipe-background">🗑️ ลบ</div>
                     <div class="swipe-card" style="border-color:#ffcdd2;" ontouchstart="swipeStart(event)" ontouchmove="swipeMove(event)" ontouchend="swipeEnd(event, '${item}', 'return')">
                         <div class="product-name" style="padding-bottom:5px;">${item}</div>
-                        <div class="controls" style="background:white; border-top:none;">
-                            <button class="btn-minus" onclick="updateRetQty('${item}', -1)">-</button>
-                            <input type="number" class="qty-input qty-input-danger" value="${q}" readonly>
-                            <button class="btn-plus btn-plus-danger" onclick="updateRetQty('${item}', 1)">+</button>
-                        </div>
-                        ${wHtml}
+                        ${controlsHtml}
                     </div>
                 </div>`;
         });
@@ -496,56 +501,67 @@
         }
     }
 
-    // --- 🔴 ส่วน API ส่งข้อมูลเข้า LINE & Google Sheets (เตรียมพร้อม) ---
+    // --- API ควบคุม ---
     async function saveAndSend() {
         const btn = document.getElementById('btn-cloud-send'); btn.innerText = "กำลังบันทึก...";
         try {
             const dateStr = new Date().toLocaleDateString('en-CA');
             await window.setDoc(window.doc(window.db, "daily_orders", dateStr), { cart: orderCart, timestamp: new Date().toISOString() });
             
-            // ส่งเข้า LINE (เมื่อใส่ Webhook แล้วเอา Comment ออกได้เลยครับ)
+            // ส่งเข้า LINE (รอ Webhook)
             /* if(WEBHOOK_URL) {
-                fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'order', data: orderCart, date: dateStr }) });
+                fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'order', qtyData: orderCart }) });
             } */
 
             alert("✅ บันทึกสั่งของขึ้นระบบเรียบร้อย!");
             appState.orderLocked = true; appState.returnLocked = true; saveAppState(); updateLocksUI();
             switchTab('receive');
-            
-            btn.innerText = "💾 ส่งข้อมูลและสั่งของ (Cloud)";
-            closeCart();
+            btn.innerText = "💾 ส่งข้อมูลและสั่งของ (Cloud)"; closeCart();
         } catch (e) { alert("เกิดข้อผิดพลาดในการบันทึก"); btn.innerText = "💾 ส่งข้อมูลและสั่งของ (Cloud)"; }
     }
 
-async function confirmReceive() { 
-        if(Object.keys(receiveQty).length === 0) { alert("ไม่มีรายการให้บันทึกครับ"); return; }
+    async function confirmReceive() { 
+        // รวบรวมข้อมูล ปรับค่า นน. หรือ จำนวน เพื่อเตรียมส่งให้ Apps Script ทีเดียวจบ
+        let finalData = {}; let hasData = false;
+        Object.keys(receiveQty).forEach(item => {
+            let val = needsWeight(item) ? (parseFloat(receiveWgt[item]) || 0) : (parseInt(receiveQty[item]) || 0);
+            if(val > 0) { finalData[item] = val; hasData = true; }
+        });
+
+        if(!hasData) { alert("ไม่มีรายการให้บันทึก (กรุณาระบุจำนวนหรือปริมาณครับ)"); return; }
+
         if(confirm("ยืนยันรับสินค้าเข้าร้าน? (ระบบจะส่งข้อมูลเข้า Sheets)")) {
-            const btn = document.querySelector('#tab-receive .btn-main');
-            const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
+            const btn = document.querySelector('#tab-receive .btn-main'); const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
             try {
                 if(WEBHOOK_URL) {
-                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'receive', qtyData: receiveQty }) });
+                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'receive', qtyData: finalData }), mode: 'no-cors' });
                 }
                 appState.orderLocked = false; appState.returnLocked = false; saveAppState();
                 receiveQty = {}; receiveWgt = {}; saveReceiveLocal(); renderReceive();
                 updateLocksUI(); switchTab('return'); 
-            } catch(e) { alert("ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่"); }
+            } catch(e) { alert("ส่งข้อมูลขัดข้อง (แต่ระบบข้ามให้แล้ว)"); }
             finally { btn.innerText = oldText; }
         }
     }
     
     async function confirmReturn() { 
-        if(Object.keys(returnQty).length === 0) { alert("ไม่มีรายการให้บันทึกครับ"); return; }
+        let finalData = {}; let hasData = false;
+        Object.keys(returnQty).forEach(item => {
+            let val = needsWeight(item) ? (parseFloat(returnWgt[item]) || 0) : (parseInt(returnQty[item]) || 0);
+            if(val > 0) { finalData[item] = val; hasData = true; }
+        });
+
+        if(!hasData) { alert("ไม่มีรายการให้บันทึกครับ"); return; }
+
         if(confirm("ยืนยันบันทึกข้อมูลคืนของเข้า Google Sheets?")) {
-            const btn = document.querySelector('#tab-return .btn-main');
-            const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
+            const btn = document.querySelector('#tab-return .btn-main'); const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
             try {
                 if(WEBHOOK_URL) {
-                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'return', qtyData: returnQty }) });
+                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'return', qtyData: finalData }), mode: 'no-cors' });
                 }
                 alert("บันทึกข้อมูลสำเร็จ!");
                 returnQty = {}; returnWgt = {}; saveReturnLocal(); renderReturn();
-            } catch(e) { alert("ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่"); }
+            } catch(e) { alert("ส่งข้อมูลขัดข้อง กรุณาลองใหม่"); }
             finally { btn.innerText = oldText; }
         }
     }
