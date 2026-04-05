@@ -517,26 +517,36 @@
         } catch (e) { alert("เกิดข้อผิดพลาดในการบันทึก"); btn.innerText = "💾 ส่งข้อมูลและสั่งของ (Cloud)"; }
     }
 
-    async function confirmReceive() { 
+async function confirmReceive() { 
+        if(Object.keys(receiveQty).length === 0) { alert("ไม่มีรายการให้บันทึกครับ"); return; }
         if(confirm("ยืนยันรับสินค้าเข้าร้าน? (ระบบจะส่งข้อมูลเข้า Sheets)")) {
-            // ส่งเข้า Sheets (เมื่อใส่ Webhook แล้วเอา Comment ออก)
-            /* if(WEBHOOK_URL) {
-                await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'receive', qtyData: receiveQty, wgtData: receiveWgt }) });
-            } */
-            
-            appState.orderLocked = false; appState.returnLocked = false; saveAppState();
-            receiveQty = {}; receiveWgt = {}; saveReceiveLocal(); renderReceive();
-            updateLocksUI(); switchTab('return'); 
+            const btn = document.querySelector('#tab-receive .btn-main');
+            const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
+            try {
+                if(WEBHOOK_URL) {
+                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'receive', qtyData: receiveQty }) });
+                }
+                appState.orderLocked = false; appState.returnLocked = false; saveAppState();
+                receiveQty = {}; receiveWgt = {}; saveReceiveLocal(); renderReceive();
+                updateLocksUI(); switchTab('return'); 
+            } catch(e) { alert("ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่"); }
+            finally { btn.innerText = oldText; }
         }
     }
     
     async function confirmReturn() { 
+        if(Object.keys(returnQty).length === 0) { alert("ไม่มีรายการให้บันทึกครับ"); return; }
         if(confirm("ยืนยันบันทึกข้อมูลคืนของเข้า Google Sheets?")) {
-            // ส่งเข้า Sheets (เมื่อใส่ Webhook แล้วเอา Comment ออก)
-            /* if(WEBHOOK_URL) {
-                await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'return', qtyData: returnQty, wgtData: returnWgt }) });
-            } */
-            alert("บันทึกข้อมูลสำเร็จ!");
+            const btn = document.querySelector('#tab-return .btn-main');
+            const oldText = btn.innerText; btn.innerText = "กำลังส่งข้อมูลเข้า Sheets...";
+            try {
+                if(WEBHOOK_URL) {
+                    await fetch(WEBHOOK_URL, { method: 'POST', body: JSON.stringify({ action: 'return', qtyData: returnQty }) });
+                }
+                alert("บันทึกข้อมูลสำเร็จ!");
+                returnQty = {}; returnWgt = {}; saveReturnLocal(); renderReturn();
+            } catch(e) { alert("ส่งข้อมูลไม่สำเร็จ กรุณาลองใหม่"); }
+            finally { btn.innerText = oldText; }
         }
     }
 
